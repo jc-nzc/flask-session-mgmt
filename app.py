@@ -1,86 +1,32 @@
 from flask import Flask, Response, redirect, url_for, request, session, abort
 from flask_login import LoginManager, UserMixin, \
-                                login_required, login_user, logout_user 
+                                login_required, login_user, logout_user
+from flask import session
 
 app = Flask(__name__)
 
-# config
-app.config.update(
-    DEBUG = True,
-    SECRET_KEY = 'secret_xxx'
-)
-
-# flask-login
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"
-
-
-# silly user model
-class User(UserMixin):
-
-    def __init__(self, id):
-        self.id = id
-        self.name = "user" + str(id)
-        self.password = self.name + "_secret"
-        
-    def __repr__(self):
-        return "%d/%s/%s" % (self.id, self.name, self.password)
-
-
-# create some users with ids 1 to 20       
-users = [User(id) for id in range(1, 21)]
-
-
-# some protected url
+# Set the secret key to some random bytes. Keep this really secret!
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 @app.route('/')
-@login_required
-def home():
-    return Response("Hello World!")
+def index():
+    if 'username' in session:
+        return f'Logged in as {session["username"]}'
+    return 'You are not logged in'
 
- 
-# somewhere to login
-@app.route("/login", methods=["GET", "POST"])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']        
-        if password == username + "_secret":
-            id = username.split('user')[1]
-            user = User(id)
-            login_user(user)
-            return redirect(request.args.get("next"))
-        else:
-            return abort(401)
-    else:
-        return Response('''
-        <form action="" method="post">
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return '''
+        <form method="post">
             <p><input type=text name=username>
-            <p><input type=password name=password>
             <p><input type=submit value=Login>
         </form>
-        ''')
+    '''
 
-
-# somewhere to logout
-@app.route("/logout")
-@login_required
+@app.route('/logout')
 def logout():
-    logout_user()
-    return Response('<p>Logged out</p>')
-
-
-# handle login failed
-@app.errorhandler(401)
-def page_not_found(e):
-    return Response('<p>Login failed</p>')
-    
-    
-# callback to reload the user object        
-@login_manager.user_loader
-def load_user(userid):
-    return User(userid)
-    
-
-if __name__ == "__main__":
-    app.run()
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
