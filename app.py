@@ -7,11 +7,13 @@ app = Flask(__name__)
 
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if 'username' in session:
-        return f'Logged in as {session["username"]}'
-    return 'You are not logged in'
+        return f'''
+            Hello {session["username"]} Welcome to our amazing API
+        '''
+    return 'Please head to our <a href="http://127.0.0.1:5000/login">login page</a>'
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
