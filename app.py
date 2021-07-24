@@ -11,9 +11,10 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 def index():
     if 'username' in session:
         return f'''
-            Hello {session["username"]} Welcome to our amazing API
+            Hello {session["username"]}. Welcome to our amazing API! <br><br>
+            If you're ready to logout then head over to <a href="http://127.0.0.1:5000/logout">logout</a>
         '''
-    return 'Please head to our <a href="http://127.0.0.1:5000/login">login page</a>'
+    return 'To get started please <a href="http://127.0.0.1:5000/login">login</a>'
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
