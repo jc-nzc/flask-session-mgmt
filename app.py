@@ -13,7 +13,8 @@ def index():
         return f'''
             Hello {session["username"]}. Welcome to our amazing API! <br><br>
             If you're ready to logout then head over to <a href="http://127.0.0.1:5000/logout">logout</a>
-        '''
+            <br> Hope to see you again soon 👋 %s<br>
+        ''' % session['username']
     return 'To get started please <a href="http://127.0.0.1:5000/login">login</a>'
 
 @app.route('/login', methods=['GET', 'POST'])
