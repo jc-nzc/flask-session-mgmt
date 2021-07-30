@@ -24,7 +24,7 @@ def login():
         return redirect(url_for('index'))
     return '''
         <form method="post">
-            <p><input type=text name=username>
+            <p><input type=text name=username required>
             <p><input type=submit value=Login>
         </form>
     '''
